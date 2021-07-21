@@ -58,6 +58,12 @@ fi
 # Add changes and push commit
 git add .
 
+# Success finish early if there is nothing to commit
+if [ -z "$(git diff-index --quiet HEAD)" ]; then
+  echo "nothing to commit"
+  exit 0
+fi
+
 commit_signoff=""
 if [ "${GIT_COMMIT_SIGN_OFF}" = "true" ]; then
   commit_signoff="-s"
