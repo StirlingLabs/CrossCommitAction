@@ -1,4 +1,4 @@
-name: 'GitHub Cross-Commit'
+name: 'Cross-Commit Action'
 description: 'Cross commits files from the base repository to another repo.'
 
 branding:

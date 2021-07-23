@@ -43,7 +43,7 @@ main(){
 	rsync -avh --delete "${EXCLUDES[@]}" "$GITHUB_WORKSPACE/${SOURCE}${f}" "$TEMP/$TARGET"
 
 	# Add changes
-	git add .
+	git add -A .
 
 	# Successfully finish early if there is nothing to commit
 	if [ -z "$(git diff-index --quiet HEAD)" ]; then

@@ -7,7 +7,7 @@
 ```yaml
 steps:
 - name: Commit to state repository
-  uses: StirlingLans/CrossCommitAction@main
+  uses: StirlingLabs/CrossCommitAction@v21.07.0
   with:
     source-folder: config
     destination-repository: https://<user>:${{ secrets.user_token }}@github.com/org/dest-repo
