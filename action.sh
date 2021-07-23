@@ -36,8 +36,13 @@ main(){
 	TEMP=$(mktemp -d)
 
 	# Set up git
-	git config --global user.email "$GIT_EMAIL"
-	git config --global user.name "$GIT_USER"
+	authHead="Authorization: token ${ github.token }"
+	acceptHead="Accept: application/vnd.github.v3+json"
+	apiUrl="https://api.github.com/users/${ github.actor }"
+	userId=$( curl -H $authHead -H $acceptHead $apiUrl | jq '.id' )
+	git config --global user.email "${ userId }+${ github.actor }@users.noreply.github.com"
+	git config --global user.name ${{ github.actor }}
+
 	git clone "$REPO" "$TEMP"
 	cd "$TEMP"
 
