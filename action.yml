@@ -1,5 +1,10 @@
-name: "Cross Commit"
-description: "Cross Commits Files from the base repository to another repo"
+name: 'GitHub Cross-Commit'
+description: 'Cross commits files from the base repository to another repo.'
+
+branding:
+  icon: "git-commit"
+  color: "blue"
+
 inputs:
   source-folder:
     description: "Sub folder of the repository to copy"
@@ -16,10 +21,12 @@ inputs:
     default: "alpha"
   git-user:
     description: "User that will be used to create the git commit"
-    required: true
+    required: false
+    default: "Cross Commit Action"
   git-user-email:
     description: "User email that will be used to create the git commit"
-    required: true
+    required: false
+    default: "cross.commit@github.action"
   git-commit-message:
     description: "Custom commit message to use"
     default: ""
@@ -32,15 +39,19 @@ inputs:
     description: "Optionally exclude some directories from being synced in both src and dst. The value is treated as column separated list, e.g. skip_dir_in_src:.git:skip_dir_in_dst"
     required: false
 runs:
-  using: "docker"
-  image: "Dockerfile"
-  args:
-    - ${{ inputs.source-folder }}
-    - ${{ inputs.destination-repository }}
-    - ${{ inputs.destination-folder }}
-    - ${{ inputs.destination-branch }}
-    - ${{ inputs.git-user }}
-    - ${{ inputs.git-user-email }}
-    - ${{ inputs.git-commit-message }}
-    - ${{ inputs.git-commit-sign-off }}
-    - ${{ inputs.excludes }}
+  
+  using: "composite"
+  
+  steps: 
+    - shell: bash
+      run: ${{ github.action_path }}/action.sh
+      env:
+        SOURCE: ${{ inputs.source-folder }}
+        REPO: ${{ inputs.destination-repository }}
+        TARGET: ${{ inputs.destination-folder }}
+        BRANCH: ${{ inputs.destination-branch }}
+        GIT_USER: ${{ inputs.git-user }}
+        GIT_EMAIL: ${{ inputs.git-user-email }}
+        GIT_COMMIT_MSG: ${{ inputs.git-commit-message }}
+        GIT_COMMIT_SIGN_OFF: ${{ inputs.git-commit-sign-off }}
+        excludes: ${{ inputs.excludes }}
