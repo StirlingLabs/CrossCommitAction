@@ -27,13 +27,13 @@ inputs:
     description: "Sign-off commit"
     default: "false"
     required: false
-  excludes:
+  exclude:
     description: "Optionally exclude some directories from being synced in both src and dst. The value is treated as column separated list, e.g. skip_dir_in_src:.git:skip_dir_in_dst"
     required: false
+    default: ""
+
 runs:
-  
   using: "composite"
-  
   steps: 
     - shell: bash
       run: ${{ github.action_path }}/action.sh
@@ -42,8 +42,7 @@ runs:
         REPO: ${{ inputs.destination-repository }}
         TARGET: ${{ inputs.destination-folder }}
         BRANCH: ${{ inputs.destination-branch }}
-        GIT_USER: ${{ inputs.git-user }}
-        GIT_EMAIL: ${{ inputs.git-user-email }}
         GIT_COMMIT_MSG: ${{ inputs.git-commit-message }}
         GIT_COMMIT_SIGN_OFF: ${{ inputs.git-commit-sign-off }}
-        excludes: ${{ inputs.excludes }}
+        EXCLUDES: ${{ inputs.exclude }}
+        GITHUB_TOKEN: ${{ github.token }}
