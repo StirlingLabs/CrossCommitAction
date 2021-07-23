@@ -13,14 +13,12 @@ main(){
 	if [ -z "$EXCLUDES" ]; then
 		echo "Exclude nothing."
 	else
-		SAVEIFS=$IFS   # Save current IFS
-		IFS=$'\n'      # Change IFS to new line
-		excludeArray=($EXCLUDES) # split to array $EXCLUDES
-		IFS=$SAVEIFS   # Restore IFS
+		echo "Excluding $EXCLUDES."
+		readarray -t excludeArray <<<"$EXCLUDES"  # split $EXCLUDES to array 
 
 		# get length of the array
 		excludeLength=${#excludeArray[@]}
-		echo "Number of excludes is ${excludeLength}"
+		echo "${excludeLength} definitions to exclude"
 		# use for loop to read all values and indexes
 		for (( i=0; i<${arraylength}; i++ ));
 		do
