@@ -13,9 +13,7 @@ steps:
     destination-repository: https://<user>:${{ secrets.user_token }}@github.com/org/dest-repo
     destination-folder: .
     destination-branch: alpha
-    git-user: "Git User"
-    git-user-email: git-user@email.com
-    git-commit-message: "Custom commit message (optional)"
+    git-commit-message: "Custom commit message"
     git-commit-sign-off: "false"
     excludes: |
       README.md
@@ -37,8 +35,6 @@ both repositories during the synchronization.
 |destination-repository|Repository to be commited to. In case of private repository, specify the full URL in the form user:path@url (using a secret for the access token or password, as above).|
 |destination-folder|Sub folder of the destingation repository to copy into.|
 |destination-branch|Branch of the destination repository to use.|
-|git-user|Optional username to be credited in the git commit.|
-|git-user-email|Optional email address to be credited in the git commit.|
 |git-commit-message|Optional message to be used the in the git commit.|
 |git-commit-sign-off|Requires sign-off|
 |excludes|Optionally exclude some directories from being synced. If you require multiple values, use the pipe character \| and have one value per line.|

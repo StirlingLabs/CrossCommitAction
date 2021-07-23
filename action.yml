@@ -19,14 +19,6 @@ inputs:
     description: "Branch of the destination repository to commit to"
     required: true
     default: "alpha"
-  git-user:
-    description: "User that will be used to create the git commit"
-    required: false
-    default: "Cross Commit Action"
-  git-user-email:
-    description: "User email that will be used to create the git commit"
-    required: false
-    default: "cross.commit@github.action"
   git-commit-message:
     description: "Custom commit message to use"
     default: ""
