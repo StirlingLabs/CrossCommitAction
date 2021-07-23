@@ -1,11 +1,4 @@
-trim() {
-    local var="$*"
-    # remove leading whitespace characters
-    var="${var#"${var%%[![:space:]]*}"}"
-    # remove trailing whitespace characters
-    var="${var%"${var##*[![:space:]]}"}"   
-    printf '%s' "$var"
-}
+#!/bin/bash
 
 main(){
 	set -euo pipefail
@@ -13,20 +6,7 @@ main(){
 	if [ -z "$EXCLUDES" ]; then
 		echo "Exclude nothing."
 	else
-		echo "Excluding $EXCLUDES."
 		readarray -t excludeArray <<<"$EXCLUDES"  # split $EXCLUDES to array 
-
-		# get length of the array
-		excludeLength=${#excludeArray[@]}
-		echo "${excludeLength} definitions to exclude"
-		# use for loop to read all values and indexes
-		for (( i=0; i<${arraylength}; i++ ));
-		do
-			echo "$i, value: >${excludeArray[$i]}<"
-			excludeArray[$i]=trim excludeArray[$i]
-			echo "$i, value: >${excludeArray[$i]}<"
-		done
-
 		declare -a EXCLUDES=("--exclude" "${excludeArray[@]}") # Add git command
 	fi
 
@@ -34,13 +14,13 @@ main(){
 	TEMP=$(mktemp -d)
 
 	# Set up git
-	authHead="Authorization: token ${ github.token }"
 	acceptHead="Accept: application/vnd.github.v3+json"
-	apiUrl="https://api.github.com/users/${ github.actor }"
-	userId=$( curl -H $authHead -H $acceptHead $apiUrl | jq '.id' )
-	git config --global user.email "${ userId }+${ github.actor }@users.noreply.github.com"
-	git config --global user.name ${{ github.actor }}
+	apiUrl="https://api.github.com/users/$GITHUB_ACTOR"
+	userId=$( curl -H "Authorization: token $GITHUB_TOKEN" -H "$acceptHead" "$apiUrl" | jq '.id' )
+	git config --global user.email "$userId+$GITHUB_ACTOR@users.noreply.github.com"
+	git config --global user.name "$GITHUB_ACTOR"
 
+	# Clone destination repo
 	git clone "$REPO" "$TEMP"
 	cd "$TEMP"
 
@@ -85,11 +65,13 @@ main(){
 		git commit ${commit_signoff} -m "${MSGHEAD}" -m "${MSGDETAIL}"
 	fi
 
-	if [[ -n "$LS_REMOTE" ]]; then
+	if [[ -n "${LS_REMOTE}" ]]; then
 		git push
 	else
-		git push origin "$BRANCH"
+		git push origin "${BRANCH}"
 	fi
 }
 
-main
+if [[ "$CI" == "true" ]]; then
+	main
+fi
