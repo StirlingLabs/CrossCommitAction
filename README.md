@@ -1,20 +1,13 @@
-# Cross Commit
+# 🔀 Cross Commit Action
 
-Github action that allows synchronizing parts of repositories. It runs rsync
-between source folder in current repository to destination repository and
-destination folder and creates a commit in destination repository. Typical
-usage is for synchronizing to GitOps state repositories from source code.
+> Synchronises parts of repositories. Typical usage is for synchronizing to GitOps state repositories from source code.
 
-## Usage
-
-See [action.yml](action.yml)
-
-Example:
+## 🚀 Quickstart
 
 ```yaml
 steps:
 - name: Commit to state repository
-  uses: drud/action-cross-commit@master
+  uses: StirlingLans/CrossCommitAction@main
   with:
     source-folder: config
     destination-repository: https://<user>:${{ secrets.user_token }}@github.com/org/dest-repo
@@ -24,7 +17,10 @@ steps:
     git-user-email: git-user@email.com
     git-commit-message: "Custom commit message (optional)"
     git-commit-sign-off: "false"
-    excludes: README.md:.git:path/deeper/in/the/repo
+    excludes: |
+      README.md
+      .git
+      path/deeper/in/the/repo
 ```
 
 The example above will trigger `rsync` that will synchronize the files in
@@ -33,7 +29,16 @@ The example above will trigger `rsync` that will synchronize the files in
 `rsync` will exclude `/.git`, `/README.md` and `/path/deeper/in/the/repo` from
 both repositories during the synchronization.
 
-## License
+## Parameters
 
-This project is licensed under Apache 2.0 license. Read the [LICENSE](LICENSE)
-file in the top distribution directory, for the full license text.
+|Name|Function|
+|-|-|
+|source-folder|Sub folder of the repository to copy.|
+|destination-repository|Repository to be commited to. In case of private repository, specify the full URL in the form user:path@url (using a secret for the access token or password, as above).|
+|destination-folder|Sub folder of the destingation repository to copy into.|
+|destination-branch|Branch of the destination repository to use.|
+|git-user|Optional username to be credited in the git commit.|
+|git-user-email|Optional email address to be credited in the git commit.|
+|git-commit-message|Optional message to be used the in the git commit.|
+|git-commit-sign-off|Requires sign-off|
+|excludes|Optionally exclude some directories from being synced. If you require multiple values, use the pipe character \| and have one value per line.|
