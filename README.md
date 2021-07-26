@@ -37,4 +37,6 @@ both repositories during the synchronization.
 |destination-branch|Branch of the destination repository to use.|
 |git-commit-message|Optional message to be used the in the git commit.|
 |git-commit-sign-off|Requires sign-off|
+|authorized-user|If a protected repo, the username of someone with commit permissions to the repo.|
+|authorized-user-secret|"A personal access token or secret for the user giving commit permissions.|
 |excludes|Optionally exclude some directories from being synced. If you require multiple values, use the pipe character \| and have one value per line.|
