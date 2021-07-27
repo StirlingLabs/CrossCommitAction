@@ -35,9 +35,7 @@ main(){
 		apiUrl="$apiUrl/$USER"
 		userNumber=$( curl -H "Authorization: token $GITHUB_TOKEN" -H "$acceptHead" "$apiUrl" | jq '.id' )
 		gitUser="$USER"
-	fi
-	#elif can we just commit as the actor?
-	if [[ -n "$GITHUB_ACTOR" ]]; then
+	elif [[ -n "$GITHUB_ACTOR" ]]; then
 		apiUrl="$apiUrl/$GITHUB_ACTOR"
 		userNumber=$( curl -H "Authorization: token $GITHUB_TOKEN" -H "$acceptHead" "$apiUrl" | jq '.id' )
 		gitUser="$GITHUB_ACTOR"
