@@ -62,7 +62,7 @@ main(){
 		git checkout "$BRANCH"
 	else
 		echo "\"$BRANCH\" does not exist on origin, creating new branch."
-		git checkout -b "$BRANCH" --track
+		git checkout -b "$BRANCH" --track "origin/$BRANCH"
 	fi
 
 	# Sync $TARGET folder to $REPO state repository, excluding excludes
