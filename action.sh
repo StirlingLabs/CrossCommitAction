@@ -49,6 +49,7 @@ main(){
 	echo "Gonfiguring git with user.name of $gitUser and user.email of $gitEmail"
 	git config --global user.name "$gitUser"
 	git config --global user.email "$gitEmail"
+	git config --global push.default current
 
 	# Clone destination repo
 	git clone "$repoUrl" "$TEMP"
@@ -61,7 +62,7 @@ main(){
 		git checkout "$BRANCH"
 	else
 		echo "\"$BRANCH\" does not exist on origin, creating new branch."
-		git checkout -b "$BRANCH"
+		git checkout -b "$BRANCH" --track
 	fi
 
 	# Sync $TARGET folder to $REPO state repository, excluding excludes
@@ -85,7 +86,7 @@ main(){
 	# Successfully finish early if there is nothing to commit
 	if [ -z "$(git diff-index --quiet HEAD)" ] && [ -n "$LS_REMOTE" ]; then
 		echo "nothing to commit"
-		# exit 0
+		exit 0
 	fi
 
 	commit_signoff=""
@@ -102,13 +103,9 @@ main(){
 		git commit ${commit_signoff} -m "${msgHead}" -m "${msgDetail}"
 	fi
 
-	if [[ -n "$LS_REMOTE" ]]; then
-		echo "pushing"
-		git push
-	else
-		echo "pushing \"$BRANCH\" to origin"
-		git push origin "$BRANCH"
-	fi
+	echo "pushing"
+	git push -u origin HEAD
+	git remote show origin
 }
 
 if [[ "$CI" == "true" ]]; then
