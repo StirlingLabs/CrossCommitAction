@@ -56,9 +56,8 @@ main(){
 
 	# Check if branch exists
 	LS_REMOTE="$(git ls-remote --heads origin "refs/heads/$BRANCH")"
-	echo "ls-remote $LS_REMOTE"
 	if [[ -n "$LS_REMOTE" ]]; then
-		echo "Checking out $BRANCH from origin."
+		echo "Checking out \"$BRANCH\" from origin."
 		git checkout "$BRANCH"
 	else
 		echo "\"$BRANCH\" does not exist on origin, creating new branch."
@@ -103,12 +102,12 @@ main(){
 		git commit ${commit_signoff} -m "${msgHead}" -m "${msgDetail}"
 	fi
 
-	if [[ -n "${LS_REMOTE}" ]]; then
+	if [[ -n "$LS_REMOTE" ]]; then
 		echo "pushing"
 		git push
 	else
-		echo "pushing to origin ${BRANCH}"
-		git push origin "${BRANCH}"
+		echo "pushing \"$BRANCH\" to origin"
+		git push origin "$BRANCH"
 	fi
 }
 
