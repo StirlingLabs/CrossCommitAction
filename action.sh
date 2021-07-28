@@ -13,7 +13,6 @@ main(){
 	# Create Temporary Directory
 	TEMP=$(mktemp -d)
 
-
 	# strip protocol from repo (if specified)
 	REPO="${REPO#http://}"
 	REPO="${REPO#https://}"
@@ -35,7 +34,8 @@ main(){
 		apiUrl="$apiUrl/$USER"
 		userNumber=$( curl -H "Authorization: token $GITHUB_TOKEN" -H "$acceptHead" "$apiUrl" | jq '.id' )
 		gitUser="$USER"
-	elif [[ -n "$GITHUB_ACTOR" ]]; then
+	fi
+	if [[ -n "$GITHUB_ACTOR" ]]; then
 		apiUrl="$apiUrl/$GITHUB_ACTOR"
 		userNumber=$( curl -H "Authorization: token $GITHUB_TOKEN" -H "$acceptHead" "$apiUrl" | jq '.id' )
 		gitUser="$GITHUB_ACTOR"
@@ -44,23 +44,24 @@ main(){
 	if [[ -n "$userNumber" ]] || [[ "$userNumber" -eq "$null" ]]; then
 		gitEmail="$userNumber+$gitUser@users.noreply.github.com"
 	fi
-	echo "Gonfiguring git with user.name of $gitUser and user.email of $gitEmail"
+	echo "Configuring git with user.name of $gitUser and user.email of $gitEmail"
 	git config --global user.name "$gitUser"
 	git config --global user.email "$gitEmail"
-	git config --global push.default current
+	gitRemote="$(git remote)"
 
 	# Clone destination repo
-	git clone "$repoUrl" "$TEMP"
 	cd "$TEMP"
 
 	# Check if branch exists
-	LS_REMOTE="$(git ls-remote --heads origin "refs/heads/$BRANCH")"
-	if [[ -n "$LS_REMOTE" ]]; then
-		echo "Checking out \"$BRANCH\" from origin."
-		git checkout "$BRANCH"
+	LS_REMOTE="$(git ls-remote "$repoUrl" --heads "refs/heads/$BRANCH")"
+	if [[ -n "$LS_REMOTE" ]]; then # branch exists
+		echo "\"$BRANCH\" already exists, cloning."
+		git clone --recursive --branch "$BRANCH" --single-branch "$repoUrl" "$TEMP"
 	else
-		echo "\"$BRANCH\" does not exist on origin, creating new branch."
-		git checkout -b "$BRANCH" --track
+		echo "\"$BRANCH\" does not exist, will create."
+		git clone --recursive "$repoUrl" "$TEMP"
+		git branch "$BRANCH"
+		git switch "$BRANCH"
 	fi
 
 	# Sync $TARGET folder to $REPO state repository, excluding excludes
@@ -81,28 +82,22 @@ main(){
 	# Add changes
 	git add --all --verbose "$TARGET"	
 
-	# Successfully finish early if there is nothing to commit
-	if [ -z "$(git diff-index --quiet HEAD)" ] && [ -n "$LS_REMOTE" ]; then
-		echo "nothing to commit"
-		exit 0
-	fi
-
 	commit_signoff=""
 	if [ "${GIT_COMMIT_SIGN_OFF}" = "true" ]; then
 		commit_signoff="-s"
 	fi
 
 	if [[ -n "$GIT_COMMIT_MSG" ]]; then
-		git commit ${commit_signoff} -m "$GIT_COMMIT_MSG"
+		git commit ${commit_signoff} -m "$GIT_COMMIT_MSG" --allow-empty
 	else
 		shortSHA=$(echo "$GITHUB_SHA" | head -c 6)
 		msgHead="Automatic CI SYNC Commit ${shortSHA}"
 		msgDetail="Syncing with ${GITHUB_REPOSITORY} commit ${GITHUB_SHA}"
-		git commit ${commit_signoff} -m "${msgHead}" -m "${msgDetail}"
+		git commit ${commit_signoff} -m "${msgHead}" -m "${msgDetail}" --allow-empty
 	fi
 
-	echo "pushing"
-	git push -u origin HEAD
+	echo "pushing to $gitRemote"
+	git push --set-upstream "$gitRemote" "$BRANCH" --verbose --porcelain
 	git remote show origin
 }
 
