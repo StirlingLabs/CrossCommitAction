@@ -1,4 +1,4 @@
-name: 'Cross-Commit Action'
+name: 'GitHub Cross-Commit Action'
 description: 'Cross commits files from the base repository to another repo.'
 
 branding:
@@ -10,7 +10,7 @@ inputs:
     description: "Sub folder of the repository to copy"
     required: true
   destination-repository:
-    description: "Repository to be commited to. In case of private repository, state with access token as a secret"
+    description: "Repository to be commited to (e.g. `github.com/StirlingLabs/CrossCommitAction`), must be accessible via https."
     required: true
   destination-folder:
     description: "Sub folder of the repository to copy into"
@@ -26,6 +26,14 @@ inputs:
   git-commit-sign-off:
     description: "Sign-off commit"
     default: "false"
+    required: false
+  authorized-user:
+    description: "If a protected repo, the username of someone with commit permissions to the repo"
+    default: ""
+    required: false
+  authorized-user-secret:
+    description: "If a protected repo, a personal access token or secret for the user with commit permissions (enabling commit)"
+    default: ""
     required: false
   exclude:
     description: "Optionally exclude some directories from being synced in both src and dst. The value is treated as column separated list, e.g. skip_dir_in_src:.git:skip_dir_in_dst"
@@ -44,5 +52,7 @@ runs:
         BRANCH: ${{ inputs.destination-branch }}
         GIT_COMMIT_MSG: ${{ inputs.git-commit-message }}
         GIT_COMMIT_SIGN_OFF: ${{ inputs.git-commit-sign-off }}
+        USER: ${{ inputs.authorized-user }}
+        USER_SECRET: ${{ inputs.authorized-user-secret }}
         EXCLUDES: ${{ inputs.exclude }}
         GITHUB_TOKEN: ${{ github.token }}
