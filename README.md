@@ -1,5 +1,7 @@
 # 🔀 Cross Commit Action
 
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/c7cb45e298d344708128c09490a2d8a3)](https://www.codacy.com/gh/StirlingLabs/CrossCommitAction/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=StirlingLabs/CrossCommitAction&amp;utm_campaign=Badge_Grade)
+
 > Synchronises parts of repositories. Typical usage is for synchronizing to GitOps state repositories from source code.
 
 ## 🚀 Quickstart
